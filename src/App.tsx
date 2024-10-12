@@ -8,7 +8,7 @@ import "./App.css";
 const App: React.FC = () => {
   return (
     <div className="w-full flex flex-col gap-8">
-      <h1>Welcome to My Chatbot App!</h1>
+      <h1>Welcome to My First Chatbot App!</h1>
       <Chatbot />
     </div>
   );
