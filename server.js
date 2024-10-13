@@ -1,23 +1,26 @@
-// server.js (or server.mjs)
+const express = require("express"); // Importing Express using require
+const bodyParser = require("body-parser"); // Importing body-parser using require
+const dotenv = require("dotenv"); // Importing dotenv using require
+const { LlamaCloudApiClient } = require("@llamaindex/cloud"); // Importing LLaMA API client using require
 
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
+dotenv.config(); // Load environment variables
 
-const app = express();
-const PORT = 5000;
+const apiToken = process.env.API_TOKEN; // Get API token from environment variables
 
-app.use(cors());
-app.use(bodyParser.json());
+const app = express(); // Create an instance of Express application
+app.use(bodyParser.json()); // Middleware to parse JSON request bodies
 
-app.post('/chat', (req, res) => {
-    const userMessage = req.body.message;
-    // Simple response logic for demonstration purposes.
-    const botResponse = `You said: ${userMessage}`;
-    
-    res.json({ response: botResponse });
+const llamaAPI = new LlamaCloudApiClient({ token: apiToken }); // Initialize LLaMA API client
+
+app.post("/api/chat", async (req, res) => {
+  const { prompt } = req.body; // Extract prompt from request body
+
+  try {
+    const response = await llamaAPI.chat({ prompt }); // Send prompt to LLaMA API
+    res.json({ response: response.output }); // Send back response from LLaMA
+  } catch (error) {
+    res.status(500).json({ error: error.message }); // Handle errors
+  }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+app.listen(3000, () => console.log("Server running on port 3000")); // Start server
